@@ -1,7 +1,9 @@
 package ru.geekbrains.core;
 
 import ru.geekbrains.data.User;
+import ru.geekbrains.db.SQLLiteAuthService;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -24,9 +26,15 @@ public class AuthController {
     }
 
     private ArrayList<User> receiveUsers() {
+        SQLLiteAuthService db = new SQLLiteAuthService();
+        try {
+            db.start();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
         ArrayList<User> usersArr = new ArrayList<>();
-        usersArr.add(new User("admin", "admin", "sysroot"));
-        usersArr.add(new User("alex", "123", "alex-st"));
+        usersArr = db.getAllUsers();
+        db.stop();
         return usersArr;
     }
 
