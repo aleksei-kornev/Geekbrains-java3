@@ -8,14 +8,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Scanner;
 
 public class ClientGUI extends JFrame implements ActionListener, Thread.UncaughtExceptionHandler, MessageSocketThreadListener {
 
@@ -156,6 +154,34 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
         }
     }
 
+    private void getFromFileHistory(String user) {
+//        try (InputStream in = new BufferedInputStream(new FileInputStream(user + "-history.txt"))) {
+//            int x;
+//            int count = 0;
+//            while (((x = in.read()) != -1) | (count < 100)) {
+//                count += 1;
+//                System.out.print((char)x);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        File file = new File(user + "-history.txt");
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        int lines = 0;
+
+        while ((scanner.hasNextLine()) & (lines < 100)) {
+            lines++;
+            chatArea.append(scanner.nextLine()+"\n");
+        }
+        scanner.close();
+    }
+
     private void showError(String errorMsg) {
         JOptionPane.showMessageDialog(this, errorMsg, "Exception!", JOptionPane.ERROR_MESSAGE);
     }
@@ -195,6 +221,7 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
             case AUTH_ACCEPT:
                 this.nickname = values[2];
                 setTitle(WINDOW_TITLE + " authorized with nickname: " + this.nickname);
+                getFromFileHistory(nickname);
                 break;
             case AUTH_DENIED:
                 putMessageInChatArea("server", msg);
