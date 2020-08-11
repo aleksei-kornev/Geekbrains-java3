@@ -26,16 +26,21 @@ public class AuthController {
     }
 
     private ArrayList<User> receiveUsers() {
-        SQLLiteAuthService db = new SQLLiteAuthService();
-        try {
-            db.start();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
         ArrayList<User> usersArr = new ArrayList<>();
-        usersArr = db.getAllUsers();
-        db.stop();
+        usersArr.add(new User("admin", "admin", "sysroot"));
+        usersArr.add(new User("alex", "123", "alex-st"));
         return usersArr;
+
+//        SQLLiteAuthService db = new SQLLiteAuthService();
+//        try {
+//            db.start();
+//        } catch (SQLException throwables) {
+//            throwables.printStackTrace();
+//        }
+//        ArrayList<User> usersArr = new ArrayList<>();
+//        usersArr = db.getAllUsers();
+//        db.stop();
+//        return usersArr;
     }
 
 }
