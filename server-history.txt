@@ -1,0 +1,7 @@
+10.08.2020 11:22:26 <server>: /auth##denied
+10.08.2020 11:22:40 <Server>: sysroot connected
+10.08.2020 12:14:40 <Server>: sysroot connected
+10.08.2020 12:32:21 <Server>: sysroot connected
+10.08.2020 12:41:04 <Server>: sysroot connected
+10.08.2020 12:42:49 <Server>: sysroot connected
+10.08.2020 12:43:07 <Server>: sysroot connected
