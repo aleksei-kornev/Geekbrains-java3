@@ -10,6 +10,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ChatServer implements ServerSocketThreadListener, MessageSocketThreadListener {
 
@@ -22,10 +24,13 @@ public class ChatServer implements ServerSocketThreadListener, MessageSocketThre
         this.listener = listener;
     }
 
+    private ExecutorService executorService;
+
     public void start(int port) {
         if (serverSocketThread != null && serverSocketThread.isAlive()) {
             return;
         }
+        executorService = Executors.newCachedThreadPool();
         serverSocketThread = new ServerSocketThread(this,"Chat-Server-Socket-Thread", port, 2000);
         serverSocketThread.start();
         authController = new AuthController();
@@ -36,6 +41,7 @@ public class ChatServer implements ServerSocketThreadListener, MessageSocketThre
         if (serverSocketThread == null || !serverSocketThread.isAlive()) {
             return;
         }
+        executorService.shutdown();
         serverSocketThread.interrupt();
         disconnectAll();
     }
