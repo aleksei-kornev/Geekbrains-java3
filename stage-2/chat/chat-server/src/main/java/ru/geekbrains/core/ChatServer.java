@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ChatServer implements ServerSocketThreadListener, MessageSocketThreadListener {
 
@@ -19,6 +21,8 @@ public class ChatServer implements ServerSocketThreadListener, MessageSocketThre
     private ChatServerListener listener;
     private AuthController authController;
     private Vector<ClientSessionThread> clients = new Vector<>();
+
+    private final Logger logger = LogManager.getLogger("ru.geekbrains.core.ChatServer");
 
     public ChatServer(ChatServerListener listener) {
         this.listener = listener;
@@ -32,6 +36,9 @@ public class ChatServer implements ServerSocketThreadListener, MessageSocketThre
         }
         executorService = Executors.newCachedThreadPool();
         serverSocketThread = new ServerSocketThread(this,"Chat-Server-Socket-Thread", port, 2000);
+
+        logger.info("Chat server started");
+
         serverSocketThread.start();
         authController = new AuthController();
         authController.init();
@@ -41,6 +48,7 @@ public class ChatServer implements ServerSocketThreadListener, MessageSocketThre
         if (serverSocketThread == null || !serverSocketThread.isAlive()) {
             return;
         }
+        logger.info("Chat server stopped");
         executorService.shutdown();
         serverSocketThread.interrupt();
         disconnectAll();
@@ -53,6 +61,7 @@ public class ChatServer implements ServerSocketThreadListener, MessageSocketThre
     @Override
     public void onClientConnected() {
         logMessage("Client connected");
+        logger.info("Chat's client connected");
     }
 
     @Override
@@ -85,6 +94,7 @@ public class ChatServer implements ServerSocketThreadListener, MessageSocketThre
         clients.remove(thread);
         if (clientSession.isAuthorized() && !clientSession.isReconnected()) {
             sendToAllAuthorizedClients(MessageLibrary.getBroadcastMessage("server", "User " + clientSession.getNickname() + " disconnected"));
+            logger.info("User " + clientSession.getNickname() + " disconnected");
         }
         sendToAllAuthorizedClients(MessageLibrary.getUserList(getUsersList()));
     }
@@ -102,6 +112,7 @@ public class ChatServer implements ServerSocketThreadListener, MessageSocketThre
     @Override
     public void onException(MessageSocketThread thread, Throwable throwable) {
         throwable.printStackTrace();
+        logger.error(throwable);
     }
 
     private void processAuthorizedUserMessage(String msg) {
@@ -129,6 +140,7 @@ public class ChatServer implements ServerSocketThreadListener, MessageSocketThre
                 !arr[0].equals(MessageLibrary.AUTH_METHOD) ||
                 !arr[1].equals(MessageLibrary.AUTH_REQUEST)) {
             clientSession.authError("Incorrect request: " + msg);
+            logger.warn("Incorrect request: " + msg);
             return;
         }
         String login = arr[2];
@@ -136,12 +148,14 @@ public class ChatServer implements ServerSocketThreadListener, MessageSocketThre
         String nickname = authController.getNickname(login, password);
         if (nickname == null) {
             clientSession.authDeny();
+            logger.warn("Authorize denied");
             return;
         } else {
             ClientSessionThread oldClientSession = findClientSessionByNickname(nickname);
             clientSession.authAccept(nickname);
             if (oldClientSession == null) {
                 sendToAllAuthorizedClients(MessageLibrary.getBroadcastMessage("Server", nickname + " connected"));
+                logger.info(nickname + " connected");
             } else {
                 oldClientSession.setReconnected(true);
                 clients.remove(oldClientSession);
