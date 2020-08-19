@@ -1,0 +1,9 @@
+
+2020-08-16 15:20:26,305 INFO    --- [AWT-EventQueue-0] ru.geekbrains.core.ChatServer            : Chat server started
+2020-08-16 15:20:29,000 INFO    --- [Chat-Server-Socket-Thread] ru.geekbrains.core.ChatServer            : Chat's client connected
+2020-08-16 15:20:29,011 WARN    --- [ClientSessionThread] ru.geekbrains.core.ChatServer            : Authorize denied
+2020-08-16 15:20:39,114 INFO    --- [Chat-Server-Socket-Thread] ru.geekbrains.core.ChatServer            : Chat's client connected
+2020-08-16 15:20:39,116 INFO    --- [ClientSessionThread] ru.geekbrains.core.ChatServer            : sysroot connected
+2020-08-16 15:20:42,471 INFO    --- [ClientSessionThread] ru.geekbrains.core.ChatServer            : User sysroot disconnected
+2020-08-16 15:20:42,472 INFO    --- [ClientSessionThread] ru.geekbrains.core.ChatServer            : User sysroot disconnected
+2020-08-16 15:20:44,262 INFO    --- [AWT-EventQueue-0] ru.geekbrains.core.ChatServer            : Chat server stopped
